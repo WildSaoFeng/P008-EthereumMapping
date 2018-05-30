@@ -26,7 +26,7 @@ total=0
 def GetDetailedPage(currentURL):
 
     global cnt
-    ICOInfo=[]
+    Info=[]
     ProjectInfo=[]
 
     html = urlopen("http://www.etherscan.io"+currentURL)
@@ -35,15 +35,15 @@ def GetDetailedPage(currentURL):
     cnt+=1
     if(len(bigTables)==4):
         contentState[currentURL]=4
-        ICOInfo = GetSingleTable(2, bigTables)
+        Info = GetSingleTable(2, bigTables)
         ProjectInfo = GetSingleTable(3, bigTables)
-        finalAns.append( (True,cnt,currentURL,ProjectInfo,ICOInfo))
+        finalAns.append( (True,cnt,currentURL,ProjectInfo,Info))
     else :
         contentState[currentURL]=3
         ProjectInfo = GetSingleTable(2, bigTables)
         finalAns.append( (False,cnt,currentURL, ProjectInfo))
 
-    print (ICOInfo)
+    print (Info)
     print (ProjectInfo)
     # print (finalAns)
 
@@ -93,7 +93,7 @@ def makeEverySheet(newSheet,num):
 
     if nowProject[0]:
         words=['state']
-        newSheet.write(6, 0, "【ICO信息】")
+        newSheet.write(6, 0, "【test】")
         startLine=7
         for i in range(23):
             newSheet.write(startLine, 0, words[i])
