@@ -158,3 +158,4 @@ if __name__ == '__main__':
     # nowURL='/currencies/dao-casino/'
     # GetDetailedPage(nowURL)
     Output()
+
