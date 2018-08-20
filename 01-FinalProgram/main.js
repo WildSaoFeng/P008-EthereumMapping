@@ -5,7 +5,7 @@ const https = require('https');
 
 var db = undefined;
 
-var web3 ;
+var web3;
 
 var contractList = [];
 
@@ -13,12 +13,7 @@ var addrList = [];
 
 var calculatedTotalSupply = 0;
 
-const AddrSchema = mongoose.Schema({
-    addr: {
-        type: String,
-        required: true
-    }
-});
+
 const Address = mongoose.model('address', AddrSchema);
 
 function unique(a) {
@@ -27,8 +22,17 @@ function unique(a) {
     })
 }
 
+const AddrSchema = mongoose.Schema({
+    addr: {
+        type: String,
+        required: true
+    }
+});
+
 function getAddress(givenAddress, callback) {
-    const query = {addr: givenAddress};
+    const query = {
+        addr: givenAddress
+    };
     Address.findOne(query, callback);
 }
 
@@ -46,10 +50,10 @@ function connectToDatabase() {
 
     db = mongoose.connection;
 
-    if(!db.readyState)
+    if (!db.readyState)
         console.log('[ Log / Database ] Database error');
     else
-        console.log('[ Log / Database ] Connected to database successfully: '+ databaseURL);
+        console.log('[ Log / Database ] Connected to database successfully: ' + databaseURL);
 
     //  [Abandoned Code]
     //      Doesn't Work for Unknown Reason
@@ -79,7 +83,7 @@ function connectToEtherNode() {
     let ethNodeURL = "https://mainnet.infura.io/8Sz0lITQzrM5dS9o6rb4";
     web3 = new Web3(new Web3.providers.HttpProvider(ethNodeURL));
 
-    console.log('[ Log / Eth Web3 ] Current Node: '+ web3.version.node);
+    console.log('[ Log / Eth Web3 ] Current Node: ' + web3.version.node);
 
 }
 
@@ -100,15 +104,13 @@ function A_AnalyzeNewBlock() {
     try {
         start = parseInt(start, 10);
 
-    }
-    catch (err) {
+    } catch (err) {
         start = 1;
     }
 
     try {
         end = parseInt(end, 10);
-    }
-    catch (err) {
+    } catch (err) {
         end = web3.eth.blockNumber;
     }
 
@@ -116,16 +118,16 @@ function A_AnalyzeNewBlock() {
     // console.log(end);
 
 
-    for(let i = start; i <= end; i++) {
+    for (let i = start; i <= end; i++) {
 
         let blockTxnNumber = web3.eth.getBlockTransactionCount(i);
         // console.log(blockTxnNumber);
-        for(let j = 0; j < blockTxnNumber; j++) {
+        for (let j = 0; j < blockTxnNumber; j++) {
             let txn = web3.eth.getTransactionFromBlock(i, j);
             // console.log(txn);
-            if(contractList.includes(txn.to))
+            if (contractList.includes(txn.to))
                 addrList.append(txn.from);
-            if(contractList.includes(txn.from))
+            if (contractList.includes(txn.from))
                 addrList.append(txn.to);
         }
 
@@ -133,13 +135,13 @@ function A_AnalyzeNewBlock() {
 
     unique(addrList);
 
-    for(let i = 0; i< addrList.length; i++) {
+    for (let i = 0; i < addrList.length; i++) {
         getAddress(addrList[i], (err, addrFound) => {
-           if(err)
-               console.log('[ Error / Database ] '+ err);
-           if(!addrFound) {
-               insertAddress(addrList[i]);
-           }
+            if (err)
+                console.log('[ Error / Database ] ' + err);
+            if (!addrFound) {
+                insertAddress(addrList[i]);
+            }
         });
     }
 }
@@ -154,7 +156,7 @@ function B_AddUpBalancesOfAContract() {
 
     calculatedTotalSupply = 0;
 
-    for(let i = 0; i < contractList.length; i++) {
+    for (let i = 0; i < contractList.length; i++) {
         let tokenBalanceURL = 'api.tokenbalance.com/balance/' + contractAddr + '/' + addrList[i];
 
         // let option = {
@@ -171,7 +173,7 @@ function B_AddUpBalancesOfAContract() {
         https.get(tokenBalanceURL, (res) => {
 
             res.setEncoding('utf8');
-            res.on('data', function (balance) {
+            res.on('data', function(balance) {
                 calculatedTotalSupply += parseFloat(balance);
             });
         });
@@ -179,6 +181,11 @@ function B_AddUpBalancesOfAContract() {
 
     console.log('[ Result / Calculated Total Supply ] Ans is: ' + calculatedTotalSupply);
 
+}
+
+function B2_AddUpBalancesOfAContractByGeth() {
+
+    let web3.
 }
 
 function main() {
@@ -193,11 +200,11 @@ function main() {
 
 Please input your option: `;
 
-    while(true) {
+    while (true) {
         let input = readline.question(intro)[0].toUpperCase();
-        if(input == 'A')
+        if (input == 'A')
             A_AnalyzeNewBlock();
-        if(input == 'B')
+        if (input == 'B')
             B_AddUpBalancesOfAContract();
     }
     rl.close();
